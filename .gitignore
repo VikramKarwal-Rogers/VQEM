@@ -1,0 +1,16 @@
+metastore_db/*
+vqem_prod/config/
+.idea/*
+vqem_dev/*
+metastore_db/*
+spark-warehouse/*
+vqem_prod/metastore_db/
+vqem_prod/preprocessor/*
+vqem_prod/job2/
+vqem_prod/job2/
+vqem_prod/job3/
+vqem_prod/job4/
+vqem_prod/job5/
+vqem_prod/main_dev.py
+vqem_prod/job1/__pycache__/
+
