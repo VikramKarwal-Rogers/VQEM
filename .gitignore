@@ -13,4 +13,10 @@ vqem_prod/job4/
 vqem_prod/job5/
 vqem_prod/main_dev.py
 vqem_prod/job1/__pycache__/
-
+src/config/__pycache__/
+src/job1/__pycache__/
+src/job2/__pycache__/
+src/job3/__pycache__/
+src/job4/__pycache__/
+src/job5/__pycache__/
+src/preprocessor/__pycache__/

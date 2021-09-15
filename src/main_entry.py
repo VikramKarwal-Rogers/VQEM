@@ -13,9 +13,19 @@ def main(run_date):
     status = job_1.__filteration__(run_date)
 
     if status==True:
+
         print("Preprocessing Successfully Completed")
     else:
         print("Preprocessing Crashed")
+
+    job_2 = TTTP()
+    status = job_2.__initial_method__()
+
+    if status == True:
+
+        print("Time To Top Profile Successfully Completed")
+    else:
+        print("Time To Top Profile Crashed")
 
 if __name__ == '__main__':
 
