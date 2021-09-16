@@ -17,3 +17,4 @@ src/config/
 src/__init__.pyc
 src/__pycache__/
 test/__init__.pyc
+test/test_job.pyc
