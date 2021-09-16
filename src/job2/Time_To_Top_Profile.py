@@ -67,7 +67,7 @@ class TTTP:
             agg(func.avg(col("Time_To_Top_Profile")).alias("Time_To_Top_Profile"),
                 func.max(col("Max_Time_To_Top_Profile")).alias("Time_To_Top_Profile_With_Max_Duration"))
 
-    def __weighted_average_ttp__(self, raw_tttp):
+    def __weighted_average_tttp__(self, raw_tttp):
 
         return raw_tttp.withColumn("weighted_average_tttp", (col("Time_To_Top_Profile") * self.weight_across_others) +
                                    (col("Time_To_Top_Profile_With_Max_Duration") * self.weight_highest_duration))
@@ -127,7 +127,7 @@ class TTTP:
 
         agg_df_with_tttp = self.__aggregate_time_to_top_profile__(raw_df_with_tttp)
 
-        weighted_average_tttp = self.__weighted_average_ttp__(agg_df_with_tttp)
+        weighted_average_tttp = self.__weighted_average_tttp__(agg_df_with_tttp)
 
         normalized_average_ttp = self.__normalized_tttp__(weighted_average_tttp)
 
