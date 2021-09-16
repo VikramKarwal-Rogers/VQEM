@@ -1,5 +1,4 @@
 metastore_db/*
-vqem_prod/config/
 .idea/*
 vqem_dev/*
 metastore_db/*
@@ -13,5 +12,4 @@ src/main_dev.py
 src/config/
 src/__init__.pyc
 src/__pycache__/
-src/job1/
 test/test_job.pyc
