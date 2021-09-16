@@ -69,9 +69,6 @@ class joboneTest(unittest.TestCase):
 
         self.assertEquals (job_1.__filteration__(df).collect(),empty_df.collect())
 
-
-
-
 if __name__ == '__main__':
     test_1 = joboneTest()
     test_1.test_filteration()
