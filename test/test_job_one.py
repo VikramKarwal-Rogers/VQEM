@@ -70,6 +70,8 @@ class joboneTest(unittest.TestCase):
 
         job_1 = parsing()
 
+        job_1.__filteration__(df).show()
+
         self.assertEquals (job_1.__filteration__(df).collect(),empty_df.collect())
 
     def test_filteration_two(self):
@@ -105,6 +107,10 @@ class joboneTest(unittest.TestCase):
         rdd2 = self.spark.sparkContext.parallelize(data_f)
 
         df1 = self.spark.createDataFrame(rdd2, filled_schema)
+
+        job_1.__filteration__(df).show()
+
+
 
         self.assertEquals(job_1.__filteration__(df).collect(), df1.collect())
 

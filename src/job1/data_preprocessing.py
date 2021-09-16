@@ -55,7 +55,7 @@ class parsing:
             withColumn("clientGeneratedTimestamp_flattened", explain(col("clientGeneratedTimestamp"))).\
             filter((col("eventtype")=="End") & (col("applicationname") == "STB-XI6") &
                    (col("assetclass") == "Linear")).\
-            filter((col("playstateChanged_flattened") == "initializing") | (col("playstateChanged_flattened") == "initialized")).\
+            filter((col("playstateChanged_flattened.value") == "initializing") | (col("playstateChanged_flattened.value") == "initialized")).\
             filter(col("clientGeneratedTimestamp_flattened") > col("starttime")).\
             filter((col("sessionduration") >= 300000)).\
             filter((col("sessionduration") <= 7200000)).\
