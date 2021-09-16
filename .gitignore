@@ -1,6 +1,10 @@
 metastore_db/*
 .idea/*
 vqem_dev/*
+src/job1/__pycache__
+src/job1/*.pyc
+src/job2/__pycache__
+src/job2/*.pyc
 metastore_db/*
 spark-warehouse/*
 src/metastore_db/
