@@ -17,6 +17,8 @@ class TTTP:
         self.con = config()
         self.obj = preprocessor(self.con.context)
         self.spark = self.con.spark
+        self.min = 0
+        self.max = 5
 
     def __time_to_top_profile__(self, raw_df):
 
@@ -70,19 +72,10 @@ class TTTP:
 
     def __normalized_tttp__(self, raw_tttp):
 
-       # max_df =  raw_tttp.agg(func.expr('percentile(weighted_average_tttp, array(0.95))')[0].alias('%95'))
-
-       # max_bound = max_df.collect()[0][0]
-
-       max_bound = 5
-
-       # print("TTTP upperbound")
-       # print(max_bound)
-
-       raw_tttp = raw_tttp.withColumn("weighted_average_tttp", func.when(col("weighted_average_tttp")> max_bound,max_bound).\
+       raw_tttp = raw_tttp.withColumn("weighted_average_tttp", func.when(col("weighted_average_tttp")> self.max,self.max).\
                                       otherwise(col("weighted_average_tttp")))
 
-       return raw_tttp.withColumn("normalized_tttp", ((col("weighted_average_tttp") - 0)/((max_bound) - 0)))
+       return raw_tttp.withColumn("normalized_tttp", ((col("weighted_average_tttp") - self.min)/((self.max) - self.min)))
 
     def __initial_method__(self):
 
