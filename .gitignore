@@ -6,11 +6,13 @@ metastore_db/*
 spark-warehouse/*
 src/metastore_db/
 src/preprocessor/*
-src/job2/
-src/job2/
 src/job3/
 src/job4/
 src/job5/
 src/main_dev.py
 src/job1/__pycache__/
 src/config/
+src/__init__.pyc
+src/__pycache__/
+src/job1/
+test/test_job.pyc
