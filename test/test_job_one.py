@@ -5,6 +5,7 @@ from pyspark.sql.types import StructField, StructType, StringType, ArrayType, In
 from src.job1.data_preprocessing import parsing
 
 
+
 class joboneTest(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
@@ -26,7 +27,7 @@ class joboneTest(unittest.TestCase):
             StructField('completionstatus', StringType(), True),
             StructField('assetclass', StringType(), True),
             StructField('sessionduration', IntegerType(), True),
-            StructField('playstateChanged', ArrayType(StringType()), True),
+            StructField('playstateChanged', ArrayType(StructType([(StructField("value", StringType(), True))])), True),
             StructField('pluginSessionId', StringType(), True),
             StructField('playbackId', StringType(), True),
             StructField('mediaOpenLatency', StringType(), True),
@@ -42,7 +43,7 @@ class joboneTest(unittest.TestCase):
     def test_filteration_one(self):
 
         data = [('q6542454412614060','50:95:51:D4:7E:13',['null'],'Start','1622841283259','STB-XI6','null','null',0,
-                 ['null'],'null','null','null','null','null','null','null',['null'],'null','null')]
+                 [{'value':'null'}],'null','null','null','null','null','null','null',['null'],'null','null')]
         schema = self.schema_creation()
 
         empty_schema = StructType([
@@ -70,14 +71,12 @@ class joboneTest(unittest.TestCase):
 
         job_1 = parsing()
 
-        job_1.__filteration__(df).show()
-
         self.assertEquals (job_1.__filteration__(df).collect(),empty_df.collect())
 
     def test_filteration_two(self):
 
         data = [('D6604896516169469','18:9C:27:49:BD:0D', ['1'], 'End', '1622841283259', 'STB-XI6', '1', 'Linear',
-                 300001, ['initializing'], '1', '1', '1', '1', '1', '1', '1', ['1622841283269'], '1', '1')]
+                 300001, [{'value':'initializing'}], '1', '1', '1', '1', '1', '1', '1', ['1622841283269'], '1', '1')]
 
         schema = self.schema_creation()
         rdd = self.sparkContext.parallelize(data)
@@ -107,10 +106,6 @@ class joboneTest(unittest.TestCase):
         rdd2 = self.spark.sparkContext.parallelize(data_f)
 
         df1 = self.spark.createDataFrame(rdd2, filled_schema)
-
-        job_1.__filteration__(df).show()
-
-
 
         self.assertEquals(job_1.__filteration__(df).collect(), df1.collect())
 
