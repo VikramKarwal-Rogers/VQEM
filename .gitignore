@@ -16,4 +16,4 @@ src/main_dev.py
 src/config/
 src/__init__.pyc
 src/__pycache__/
-test/*.pyc
+test/__init__.pyc
