@@ -19,6 +19,8 @@ class TTTP:
         self.spark = self.con.spark
         self.min = 0
         self.max = 5
+        self.weight_highest_duration=70
+        self.weight_across_others=30
 
     def __time_to_top_profile__(self, raw_df):
 
@@ -67,8 +69,8 @@ class TTTP:
 
     def __weighted_average_ttp__(self, raw_tttp):
 
-        return raw_tttp.withColumn("weighted_average_tttp", (col("Time_To_Top_Profile") * 0.30) +
-                                   (col("Time_To_Top_Profile_With_Max_Duration") * 0.70))
+        return raw_tttp.withColumn("weighted_average_tttp", (col("Time_To_Top_Profile") * self.weight_across_others) +
+                                   (col("Time_To_Top_Profile_With_Max_Duration") * self.weight_highest_duration))
 
     def __normalized_tttp__(self, raw_tttp):
 
