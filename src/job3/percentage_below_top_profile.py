@@ -18,6 +18,8 @@ class PTBTP:
         self.con = config()
         self.obj = preprocessor(self.con.context)
         self.spark = self.con.spark
+        self.min_bound=0.02
+        self.max_bound=25
 
     def __percentage_below_top_profile__(self, raw_df):
 
@@ -115,23 +117,12 @@ class PTBTP:
 
     def __normalized_weighted_average_PTBTP__(self,raw_df):
 
-        # min_df = raw_df.agg(func.expr('percentile(weighted_average_PTBTP, array(0.5))')[0].alias('%5'))
-        # min_bound = min_df.collect()[0][0]
-        # print(min_bound)
-
-        min_bound=0.02
-
-        # max_df = raw_df.agg(func.expr('percentile(weighted_average_PTBTP, array(0.90))')[0].alias('%90'))
-        # max_bound = max_df.collect()[0][0]
-
-        max_bound = 25
-
         raw_df = raw_df.withColumn("normalized_weighted_average_PTBTP",
-                                       func.when(col("weighted_average_PTBTP") <= min_bound, min_bound). \
-                                       otherwise(func.when(col("weighted_average_PTBTP") >= max_bound, max_bound).otherwise(col("weighted_average_PTBTP"))))
+                                       func.when(col("weighted_average_PTBTP") <= self.min_bound, self.min_bound). \
+                                       otherwise(func.when(col("weighted_average_PTBTP") >= self.max_bound, self.max_bound).otherwise(col("weighted_average_PTBTP"))))
 
         return raw_df.withColumn("normalized_weighted_average_PTBTP",
-                                 (((col("weighted_average_PTBTP") - min_bound) / ((max_bound - min_bound)))))
+                                 (((col("weighted_average_PTBTP") - self.min_bound) / ((self.max_bound - self.min_bound)))))
 
     def __initial_method__(self):
 
