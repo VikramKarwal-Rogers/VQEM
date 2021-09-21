@@ -105,8 +105,6 @@ class TTTP:
                         col("clientGeneratedTimestamp_flattened"),
                         col("az_insert_ts"))
 
-        raw_df.where(col("deviceSourceId") == 'E0:37:17:5A:00:BF').show(10, False)
-
         raw_df_with_tttp = self.__time_to_top_profile__(raw_df.\
                                                        select("deviceSourceId",
                                                               "sessionduration",
@@ -127,10 +125,8 @@ class TTTP:
                    "Max_Time_To_Top_Profile",
                    "az_insert_ts")
 
-        raw_df_with_tttp.where(col("deviceSourceId") == 'E0:37:17:5A:00:BF').show(10, False)
 
         agg_df_with_tttp = self.__aggregate_time_to_top_profile__(raw_df_with_tttp)
-
 
 
         weighted_average_tttp = self.__weighted_average_tttp__(agg_df_with_tttp)
