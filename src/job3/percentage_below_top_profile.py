@@ -1,7 +1,7 @@
-from preprocessor.preprocess import preprocessor
+from src.preprocessor.preprocess import preprocessor
 from pyspark.sql.functions import rank, col, max as max_
 from pyspark.sql.functions import lit, when
-from config.config import config
+from src.config.config import config
 from pyspark.sql.functions import explode
 from pyspark.sql import functions as func
 from pyspark.sql.functions import col, array_contains, element_at

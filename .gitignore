@@ -6,6 +6,7 @@ src/job1/*.pyc
 src/job2/__pycache__
 src/job3/__pycache__
 src/job2/*.pyc
+src/job3/*.pyc
 metastore_db/*
 spark-warehouse/*
 src/metastore_db/
