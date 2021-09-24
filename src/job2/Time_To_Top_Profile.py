@@ -70,7 +70,8 @@ class TTTP:
     def __weighted_average_tttp__(self, raw_tttp):
 
         return raw_tttp.withColumn("weighted_average_tttp", (col("Time_To_Top_Profile") * self.weight_across_others) +
-                                   (col("Time_To_Top_Profile_With_Max_Duration") * self.weight_highest_duration))
+                                   (col("Time_To_Top_Profile_With_Max_Duration") * self.weight_highest_duration)).\
+    filter(col("weighted_average_tttp") >= 0)
 
     def __normalized_tttp__(self, raw_tttp):
 

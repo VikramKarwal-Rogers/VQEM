@@ -108,7 +108,8 @@ class PTBTP:
 
 
         return raw_df_with_total_session_duration.groupBy("deviceSourceId","pluginSessionId").sum("dot_product_PTBTP").\
-            withColumnRenamed("sum(dot_product_PTBTP)","weighted_average_PTBTP")
+            withColumnRenamed("sum(dot_product_PTBTP)","weighted_average_PTBTP"). \
+            filter(col("weighted_average_PTBTP") >= 0)
 
     def __weighted_PTBTP_average_by_device__(self,raw_df):
 
@@ -154,6 +155,7 @@ class PTBTP:
         weighted_percentage_below_top_profile = self.__weighted_percentage_below_top_profile__(percentage_below_top_profile)
 
         weighted_PTBTP_average_by_device = self.__weighted_PTBTP_average_by_device__(weighted_percentage_below_top_profile)
+
 
         normalized_weighted_average_PTBTP = self.__normalized_weighted_average_PTBTP__(weighted_PTBTP_average_by_device)
 
