@@ -43,6 +43,6 @@ if __name__ == '__main__':
     fmt = "%Y-%m-%d"
     tz = timezone('EST')
     current_date = datetime.now(tz).strftime(fmt)
-    run_date = datetime.strptime(current_date, "%Y-%m-%d") + timedelta(days=-3)
+    run_date = datetime.strptime(current_date, "%Y-%m-%d") + timedelta(days=-4)
     main(run_date)
 

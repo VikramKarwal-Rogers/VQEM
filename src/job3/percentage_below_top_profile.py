@@ -123,7 +123,7 @@ class PTBTP:
                                        otherwise(func.when(col("weighted_average_PTBTP") >= self.max_bound, self.max_bound).otherwise(col("weighted_average_PTBTP"))))
 
         return raw_df.withColumn("normalized_weighted_average_PTBTP",
-                                 (((col("weighted_average_PTBTP") - self.min_bound) / ((self.max_bound - self.min_bound)))))
+                                 (((col("normalized_weighted_average_PTBTP") - self.min_bound) / ((self.max_bound - self.min_bound)))))
 
     def __initial_method__(self):
 
@@ -159,8 +159,10 @@ class PTBTP:
 
         normalized_weighted_average_PTBTP = self.__normalized_weighted_average_PTBTP__(weighted_PTBTP_average_by_device)
 
+        join_two_frames = self.obj.join_two_frames(percentage_below_top_profile, normalized_weighted_average_PTBTP, "inner","deviceSourceId")
+
         self.spark.sql("DROP TABLE IF EXISTS default.vqem_percentage_below_top_profile_stage_2")
-        normalized_weighted_average_PTBTP.write.saveAsTable("default.vqem_percentage_below_top_profile_stage_2")
+        join_two_frames.write.saveAsTable("default.vqem_percentage_below_top_profile_stage_2")
 
         return True
 

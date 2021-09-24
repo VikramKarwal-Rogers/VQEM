@@ -126,16 +126,17 @@ class TTTP:
                    "Max_Time_To_Top_Profile",
                    "az_insert_ts")
 
-
         agg_df_with_tttp = self.__aggregate_time_to_top_profile__(raw_df_with_tttp)
-
 
         weighted_average_tttp = self.__weighted_average_tttp__(agg_df_with_tttp)
 
         normalized_average_ttp = self.__normalized_tttp__(weighted_average_tttp)
 
+        join_two_df = self.obj.join_two_frames(raw_df_with_tttp, normalized_average_ttp.select("deviceSourceId",
+                                                                                               "weighted_average_tttp",
+                                                                                               "normalized_tttp"), "inner", "deviceSourceId")
         self.spark.sql("DROP TABLE IF EXISTS default.vqem_time_to_top_profile_stage_1")
-        normalized_average_ttp.write.saveAsTable("default.vqem_time_to_top_profile_stage_1")
+        join_two_df.write.saveAsTable("default.vqem_time_to_top_profile_stage_1")
 
         return True
 
