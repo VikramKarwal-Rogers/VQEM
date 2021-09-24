@@ -6,7 +6,7 @@
 <h1> Pending </h1>
 
 
-<h3> Channel Information is still Need to Have a Continuous Pipeline (in-progress)
+<h3> Channel Information is still Needed to Have a Continuous Pipeline (in-progress)
 
 
 ![Alt text](channel_dim.png?raw=true "Original") 
