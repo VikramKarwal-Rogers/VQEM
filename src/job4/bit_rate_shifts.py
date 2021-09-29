@@ -93,6 +93,9 @@ class BRS:
                                                                            "sessionduration",
                                                                            "bitrate").distinct())
 
+        self.spark.sql("DROP TABLE IF EXISTS default.vqem_bitrate_shifts_stage_3_detail")
+        total_bitrate_shifts.write.saveAsTable("default.vqem_bitrate_shifts_stage_3_detail")
+
         weighted_bitrate_shifts = self.__weighted_bitrate_shifts__(total_bitrate_shifts)
 
 
