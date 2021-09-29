@@ -2,7 +2,8 @@ from job1.data_preprocessing import parsing
 from job2.Time_To_Top_Profile import TTTP
 from job3.percentage_below_top_profile import PTBTP
 from job4.bit_rate_shifts import BRS
-from job5.vqem_score import VQEM
+from job5.session_startup_time import SST
+from job6.vqem_score import VQEM
 from pytz import timezone
 from datetime import datetime, timedelta
 
@@ -38,11 +39,27 @@ def main(run_date):
     else:
         print("Percentage Below Top Profile Job Crashed")
 
+    job_4 = BRS()
+    status = job_4.__initial_method__()
+
+    if status == True:
+        print("Bitrate Shifts Job Successfully Completed")
+    else:
+        print("Bitrate Shifts Job Crashed")
+
+    job_5 = SST()
+    status = job_5.__initial_method__()
+
+    if status == True:
+        print("Session Start Time Job Successfully Completed")
+    else:
+        print("Session Start Time Job Crashed")
+
 if __name__ == '__main__':
 
     fmt = "%Y-%m-%d"
     tz = timezone('EST')
     current_date = datetime.now(tz).strftime(fmt)
-    run_date = datetime.strptime(current_date, "%Y-%m-%d") + timedelta(days=-4)
+    run_date = datetime.strptime(current_date, "%Y-%m-%d") + timedelta(days=-8)
     main(run_date)
 

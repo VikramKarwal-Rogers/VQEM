@@ -9,6 +9,7 @@ from pyspark.sql.window import Window
 from pyspark.sql.functions import *
 from pyspark.sql.types import DoubleType, IntegerType
 from pyspark.sql.functions import array_position
+from pyspark.sql.types import DoubleType, IntegerType, LongType
 
 
 class TTTP:
@@ -19,8 +20,6 @@ class TTTP:
         self.spark = self.con.spark
         self.min = 0
         self.max = 5
-        self.weight_highest_duration=70
-        self.weight_across_others=30
 
     def __time_to_top_profile__(self, raw_df):
 
@@ -42,36 +41,7 @@ class TTTP:
                        "playbackId",
                        "Time_To_Top_Profile",
                        "az_insert_ts")
-
-        session_by_max_duration = tttp_per_session.groupBy(col("deviceSourceId"),
-                                                 col("pluginSessionId")).\
-                                                 agg(func.max(col("sessionduration"))).\
-            withColumnRenamed("max(sessionduration)", "sessionduration").\
-            select("deviceSourceId",
-                   "pluginSessionId",
-                   "sessionduration")
-
-        tttp_by_max_duration = self.obj.join_two_frames(tttp_per_session, session_by_max_duration, "inner", ["deviceSourceId",
-                                                                                                             "pluginSessionId",
-                                                                                                             "sessionduration"]).\
-            select("deviceSourceId",
-                   "pluginSessionId",
-                   "Time_To_Top_Profile").\
-            withColumnRenamed("Time_To_Top_Profile","Max_Time_To_Top_Profile")
-
-        return self.obj.join_two_frames(tttp_per_session, tttp_by_max_duration, "inner", ["deviceSourceId", "pluginSessionId"])
-
-    def __aggregate_time_to_top_profile__(self, raw_tttp):
-
-        return raw_tttp.groupBy("deviceSourceId").\
-            agg(func.avg(col("Time_To_Top_Profile")).alias("Time_To_Top_Profile"),
-                func.max(col("Max_Time_To_Top_Profile")).alias("Time_To_Top_Profile_With_Max_Duration"))
-
-    def __weighted_average_tttp__(self, raw_tttp):
-
-        return raw_tttp.withColumn("weighted_average_tttp", (col("Time_To_Top_Profile") * self.weight_across_others) +
-                                   (col("Time_To_Top_Profile_With_Max_Duration") * self.weight_highest_duration)).\
-    filter(col("weighted_average_tttp") >= 0)
+        return tttp_per_session
 
     def __normalized_tttp__(self, raw_tttp):
 
@@ -79,6 +49,28 @@ class TTTP:
                                       otherwise(col("weighted_average_tttp")))
 
        return raw_tttp.withColumn("normalized_tttp", ((col("weighted_average_tttp") - self.min)/((self.max) - self.min)))
+
+    def __weighted_TTTP_average_by_device__(self, raw_df):
+
+        return raw_df.groupBy("deviceSourceId").avg("weighted_average_tttp"). \
+            withColumnRenamed("avg(weighted_average_tttp)", "weighted_average_tttp")
+
+    def __weighted_time_to_top_profile__(self, raw_df):
+
+        total_session_duration = raw_df.groupBy("deviceSourceId", "pluginSessionId").sum("sessionduration"). \
+            withColumnRenamed("sum(sessionduration)", "total_session_duration")
+
+        raw_df_with_total_session_duration = self.obj.join_two_frames(raw_df, total_session_duration, "inner",
+                                                                      ["deviceSourceId",
+                                                                       "pluginSessionId"
+                                                                       ]). \
+            withColumn("weights", func.round(col("sessionduration") / col("total_session_duration"), 10)). \
+            withColumn("dot_product_TTTP", func.when(col("weights") == 1.0, col("Time_To_Top_Profile")). \
+                       otherwise(round(col("Time_To_Top_Profile") * col("weights"), 10)).cast(DoubleType()))
+
+        return raw_df_with_total_session_duration.groupBy("deviceSourceId", "pluginSessionId").sum("dot_product_TTTP").\
+            withColumnRenamed("sum(dot_product_TTTP)", "weighted_average_TTTP"). \
+            filter(col("weighted_average_TTTP") >= 0)
 
     def __initial_method__(self):
 
@@ -123,20 +115,20 @@ class TTTP:
                    "sessionduration",
                    "stream_type",
                    "Time_To_Top_Profile",
-                   "Max_Time_To_Top_Profile",
+                   # "Max_Time_To_Top_Profile",
                    "az_insert_ts")
 
-        agg_df_with_tttp = self.__aggregate_time_to_top_profile__(raw_df_with_tttp)
+        self.spark.sql("DROP TABLE IF EXISTS default.vqem_time_to_top_profile_stage_1_detail")
+        raw_df_with_tttp.write.saveAsTable("default.vqem_time_to_top_profile_stage_1_detail")
 
-        weighted_average_tttp = self.__weighted_average_tttp__(agg_df_with_tttp)
+        weighted_average_tttp_session = self.__weighted_time_to_top_profile__(raw_df_with_tttp)
+
+        weighted_average_tttp  = self.__weighted_TTTP_average_by_device__(weighted_average_tttp_session)
 
         normalized_average_ttp = self.__normalized_tttp__(weighted_average_tttp)
 
-        join_two_df = self.obj.join_two_frames(raw_df_with_tttp, normalized_average_ttp.select("deviceSourceId",
-                                                                                               "weighted_average_tttp",
-                                                                                               "normalized_tttp"), "inner", "deviceSourceId")
         self.spark.sql("DROP TABLE IF EXISTS default.vqem_time_to_top_profile_stage_1")
-        join_two_df.write.saveAsTable("default.vqem_time_to_top_profile_stage_1")
+        normalized_average_ttp.write.saveAsTable("default.vqem_time_to_top_profile_stage_1")
 
         return True
 

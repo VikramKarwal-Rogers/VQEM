@@ -2,15 +2,12 @@ from src.preprocessor.preprocess import preprocessor
 from pyspark.sql.functions import rank, col, max as max_
 from pyspark.sql.functions import lit, when
 from src.config.config import config
-from pyspark.sql.functions import explode
 from pyspark.sql import functions as func
-from pyspark.sql.functions import col, array_contains, element_at
 from pyspark.sql.window import Window
 from pyspark.sql.functions import *
 from pyspark.sql.types import DoubleType, IntegerType, LongType
-from pyspark.sql.functions import array_position
 from pyspark.sql.functions import arrays_zip
-import re
+
 
 class PTBTP:
 
@@ -69,15 +66,48 @@ class PTBTP:
 
         raw_df = raw_df.withColumn("col_rank", row_number().over(windowSpec))
 
+        raw_df = raw_df.withColumn("bitrate", split(col("bitrate_timestamp"),"_")[0])
+
         my_window = Window.partitionBy().orderBy("deviceSourceId","pluginSessionId", "playbackId","col_rank")
 
-        raw_df = raw_df.withColumn("prev_value", func.lag(raw_df.timestamp).over(my_window))
+        raw_df = raw_df.withColumn("prev_value", func.lag(raw_df.timestamp).over(my_window)).\
+            withColumn("next_bitrate", func.lag(raw_df.bitrate).over(my_window))
+
+        raw_df = raw_df.withColumn("bitrate", split(col("bitrate_timestamp"),"_")[0].cast(DoubleType()))
 
         raw_df = raw_df.withColumn("diff", func.when((func.isnull(raw_df.timestamp - raw_df.prev_value)) | (col("col_rank") == 1), 0)
                            .otherwise(raw_df.timestamp - raw_df.prev_value)).\
-            withColumn("diff", func.when(col("diff") == 0, col("timestamp")-col("starttime")).otherwise(col("diff")).cast(LongType()))
+            withColumn("btp_flag", func.when((col("stream_type")=="HVQ") & (col("next_bitrate")=="6151600"),
+                                 1).otherwise(func.when((col("stream_type")=="HD") & (col("next_bitrate")=="3718000"),
+                                 1).otherwise(func.when((col("stream_type")=="SD") & (col("next_bitrate")=="1701200"),
+                                 1).otherwise(func.when((col("stream_type")=="UHD") & (col("next_bitrate")=="18597200"),
+                                 1).otherwise(0)))))
 
-        raw_df_below_top_profile = raw_df.filter(col("below_top_profile_timestamp") != 0)
+        max_col_rank = raw_df.groupBy("deviceSourceId","pluginSessionId","playbackId").max("col_rank").withColumnRenamed("max(col_rank)","col_rank")
+
+        raw_df_with_max_col_rank = self.obj.join_two_frames(raw_df,max_col_rank,"inner",["deviceSourceId","pluginSessionId","playbackId","col_rank"]).\
+            select("deviceSourceId",
+                   "pluginSessionId",
+                   "playbackId",
+                   "bitrate",
+                   "timestamp").\
+            withColumnRenamed("bitrate","last_bitrate").\
+            withColumnRenamed("timestamp","last_timestamp")
+
+        raw_df = self.obj.join_two_frames(raw_df,raw_df_with_max_col_rank,"inner", ["deviceSourceId","pluginSessionId","playbackId"])
+
+        raw_df = raw_df.withColumn("below_time_after_last_timestamp", func.when((col("stream_type")=="HVQ") & (col("last_bitrate")!="6151600"),
+                                                                                ((col("starttime") + col("sessionduration"))-col("last_timestamp"))).\
+            otherwise(func.when((col("stream_type")=="HD") &(col("last_bitrate")!="3718000"),
+                                ((col("starttime") + col("sessionduration")) - col("last_timestamp"))).\
+            otherwise(func.when((col("stream_type")=="SD") & (col("last_bitrate")!="1701200"),
+                                ((col("starttime") + col("sessionduration")) - col("last_timestamp"))).\
+            otherwise(func.when((col("stream_type")=="UHD") & (col("last_bitrate")!="18597200"),
+                                ((col("starttime") + col("sessionduration")) - col("last_timestamp"))).\
+            otherwise(0)))))
+
+        raw_df_below_top_profile = raw_df.filter((col("btp_flag") == 0))
+
         raw_df_below_top_profile= raw_df_below_top_profile.groupBy("deviceSourceId","pluginSessionId","playbackId").\
             sum("diff").\
         withColumnRenamed("sum(diff)","time_below_top_profile").distinct()
@@ -87,11 +117,21 @@ class PTBTP:
                                                                                "playbackId",
                                                                                "sessionduration",
                                                                                "starttime",
-                                                                               "stream_type"
+                                                                               "stream_type",
+                                                                               "below_time_after_last_timestamp",
                                                                                ), raw_df_below_top_profile,"inner",["deviceSourceId","pluginSessionId","playbackId"]).distinct()
 
         return raw_df_with_below_top_profile.withColumn("percentage_below_top_profile",
-                                                        round(((col("time_below_top_profile")/1000)/(col("sessionduration")/1000))*100,3))
+                                                        round(((col("time_below_top_profile") + col("below_time_after_last_timestamp"))/1000)/(col("sessionduration")/1000)*100,3)).\
+    withColumn("time_below_top_profile", col("below_time_after_last_timestamp") + col("time_below_top_profile")).\
+    select("deviceSourceId",
+           "pluginSessionId",
+           "playbackId",
+           "sessionduration",
+           "starttime",
+           "stream_type",
+           "time_below_top_profile",
+           "percentage_below_top_profile")
 
 
     def __weighted_percentage_below_top_profile__(self, raw_df):
@@ -152,17 +192,17 @@ class PTBTP:
 
         percentage_below_top_profile = self.__percentage_below_top_profile__(raw_df)
 
+        self.spark.sql("DROP TABLE IF EXISTS default.vqem_percentage_below_top_profile_stage_2_detail")
+        percentage_below_top_profile.write.saveAsTable("default.vqem_percentage_below_top_profile_stage_2_detail")
+
         weighted_percentage_below_top_profile = self.__weighted_percentage_below_top_profile__(percentage_below_top_profile)
 
         weighted_PTBTP_average_by_device = self.__weighted_PTBTP_average_by_device__(weighted_percentage_below_top_profile)
 
-
         normalized_weighted_average_PTBTP = self.__normalized_weighted_average_PTBTP__(weighted_PTBTP_average_by_device)
 
-        join_two_frames = self.obj.join_two_frames(percentage_below_top_profile, normalized_weighted_average_PTBTP, "inner","deviceSourceId")
-
         self.spark.sql("DROP TABLE IF EXISTS default.vqem_percentage_below_top_profile_stage_2")
-        join_two_frames.write.saveAsTable("default.vqem_percentage_below_top_profile_stage_2")
+        normalized_weighted_average_PTBTP.write.saveAsTable("default.vqem_percentage_below_top_profile_stage_2")
 
         return True
 

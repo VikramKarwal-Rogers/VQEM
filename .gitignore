@@ -7,13 +7,13 @@ src/job2/__pycache__
 src/job3/__pycache__
 src/job2/*.pyc
 src/job3/*.pyc
+src/job5/*
 metastore_db/*
 spark-warehouse/*
 src/metastore_db/
 src/preprocessor/*
 #src/job3/
-src/job4/
-src/job5/
+src/job6/*
 src/main_dev.py
 src/config/
 src/__init__.pyc
