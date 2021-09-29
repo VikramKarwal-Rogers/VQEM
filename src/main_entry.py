@@ -47,13 +47,13 @@ def main(run_date):
     else:
         print("Bitrate Shifts Job Crashed")
 
-    job_5 = SST()
-    status = job_5.__initial_method__()
-
-    if status == True:
-        print("Session Start Time Job Successfully Completed")
-    else:
-        print("Session Start Time Job Crashed")
+    # job_5 = SST()
+    # status = job_5.__initial_method__()
+    #
+    # if status == True:
+    #     print("Session Start Time Job Successfully Completed")
+    # else:
+    #     print("Session Start Time Job Crashed")
 
 if __name__ == '__main__':
 
