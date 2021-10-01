@@ -21,3 +21,4 @@ src/__pycache__/
 test/__init__.pyc
 test/test_job.pyc
 test/*.pyc
+src/job4/__pycache__
