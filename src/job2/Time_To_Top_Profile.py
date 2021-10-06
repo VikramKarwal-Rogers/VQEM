@@ -28,18 +28,18 @@ class TTTP:
                                                                     otherwise(func.when(col("stream_type") == "SD",  array_position(col("bitrate"), 1701200)).\
                                                                     otherwise(func.when(col("stream_type") == "UHD", array_position(col("bitrate"),18597200)).\
                                                                     otherwise(-1))))).\
-                        withColumn("Time_To_Top_Profile", func.when((col("pos_top_bitrate") == -1) | (col("pos_top_bitrate") == 0), 0).\
+                        withColumn("time_to_top_profile", func.when((col("pos_top_bitrate") == -1) | (col("pos_top_bitrate") == 0), 0).\
                                    otherwise(func.when((col("clientGeneratedTimestamp")[col("pos_top_bitrate").cast(IntegerType())-1] > col("starttime")),
                                                        (col("clientGeneratedTimestamp")[col("pos_top_bitrate").cast(IntegerType())-1] - col("starttime"))/1000).\
                                              otherwise("None"))).\
-                filter(col("Time_To_Top_Profile") != "None").\
+                filter(col("time_to_top_profile") != "None").\
                 select("deviceSourceId",
                        "stream_type",
                        "sessionduration",
                        "starttime",
                        "pluginSessionId",
                        "playbackId",
-                       "Time_To_Top_Profile",
+                       "time_to_top_profile",
                        "az_insert_ts")
         return tttp_per_session
 
@@ -114,7 +114,7 @@ class TTTP:
                    "starttime",
                    "sessionduration",
                    "stream_type",
-                   "Time_To_Top_Profile",
+                   "time_to_top_profile",
                    # "Max_Time_To_Top_Profile",
                    "az_insert_ts")
 

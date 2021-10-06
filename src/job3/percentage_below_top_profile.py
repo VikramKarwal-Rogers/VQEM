@@ -131,7 +131,9 @@ class PTBTP:
            "starttime",
            "stream_type",
            "time_below_top_profile",
-           "percentage_below_top_profile")
+           "percentage_below_top_profile").\
+    filter(col("percentage_below_top_profile")>=0).\
+    filter(col("percentage_below_top_profile")<=100)
 
 
     def __weighted_percentage_below_top_profile__(self, raw_df):
@@ -190,7 +192,8 @@ class PTBTP:
                    "playbackId",
                    "clientGeneratedTimestamp").distinct()
 
-        percentage_below_top_profile = self.__percentage_below_top_profile__(raw_df)
+        percentage_below_top_profile = self.__percentage_below_top_profile__(raw_df).\
+            withColumn("time_at_top_profile",col("sessionduration") - col("time_below_top_profile"))
 
         self.spark.sql("DROP TABLE IF EXISTS default.vqem_percentage_below_top_profile_stage_2_detail")
         percentage_below_top_profile.write.saveAsTable("default.vqem_percentage_below_top_profile_stage_2_detail")

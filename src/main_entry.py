@@ -3,7 +3,9 @@ from job2.Time_To_Top_Profile import TTTP
 from job3.percentage_below_top_profile import PTBTP
 from job4.session_startup_time import SST
 from job5.bit_rate_shifts import BRS
-from job6.vqem_score import VQEM
+from job6.vqem_score_device_level import VQEM_DEVICE
+from job6.vqem_score_session_level import VQEM_SESSION
+from job6.vqem_score_account_level import VQEM_ACCOUNT
 from pytz import timezone
 from datetime import datetime, timedelta
 
@@ -54,6 +56,35 @@ def main(run_date):
         print("Bitrate Shifts Job Successfully Completed")
     else:
         print("Bitrate Shifts Job Crashed")
+
+    job_6 = VQEM_DEVICE()
+    status = job_6.__initial_method__(run_date)
+
+    if status == True:
+
+        print("VQEM on Device Level Completed")
+    else:
+
+        print("VQEM on Device Level Crashed")
+
+    job_7 = VQEM_SESSION()
+    status = job_7.__initial_method__(run_date)
+
+    if status == True:
+
+        print("VQEM on Session Level Completed")
+    else:
+        print("VQEM on Session Level Crashed")
+
+    job_8 = VQEM_ACCOUNT()
+    status = job_8.__initial_method__(run_date)
+
+    if status == True:
+
+        print("VQEM on Account Level Completed")
+    else:
+
+        print("VQEM on Account Level Crashed")
 
 if __name__ == '__main__':
 

@@ -27,7 +27,8 @@ class SST:
             withColumn("stp_clientgeneratedtimestamp", raw_df["clientGeneratedTimestamp"].getItem(0)).\
             withColumn("stp_time", (col("stp_clientgeneratedtimestamp") -
                                                   col("starttime")).cast(LongType()))
-        raw_df = raw_df.withColumn("percentage_of_stp_time", col("stp_time")/col("sessionduration"))
+        raw_df = raw_df.withColumn("percentage_of_stp_time", col("stp_time")/col("sessionduration")). \
+            filter((col("percentage_of_stp_time") >= 0) & (col("stp_time") >= 0))
 
         return raw_df
 
@@ -42,7 +43,8 @@ class SST:
                                                                        ]). \
             withColumn("weights", func.round(col("sessionduration") / col("total_session_duration"), 10)). \
             withColumn("dot_product_STP", func.when(col("weights") == 1.0, col("percentage_of_stp_time")). \
-                       otherwise(round(col("percentage_of_stp_time") * col("weights"), 10)).cast(DoubleType()))
+                       otherwise(round(col("percentage_of_stp_time") * col("weights"), 10)).cast(DoubleType())).\
+            filter(col("percentage_of_stp_time")>=0)
 
         return raw_df_with_total_session_duration.groupBy("deviceSourceId", "pluginSessionId").sum("dot_product_STP"). \
             withColumnRenamed("sum(dot_product_STP)", "weighted_average_STP"). \
