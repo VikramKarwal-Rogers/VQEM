@@ -1,5 +1,5 @@
-from preprocessor.preprocess import preprocessor
-from config.config import config
+from vqem.preprocess import preprocessor
+from vqem.config import config
 from pyspark.sql.functions import *
 from pyspark.sql import functions as func
 from pyspark.sql.types import LongType, StringType

@@ -24,7 +24,7 @@ class VQEM_ACCOUNT:
         tttp_session = self.obj.get_data("default.vqem_time_to_top_profile_stage_1_detail", ["deviceSourceId",
                                                                                              "pluginSessionId",
                                                                                              "playbackId",
-                                                                                             "time_to_top_profile",
+                                                                                             "tttp",
                                                                                              "az_insert_ts"])
 
         ptbtp_session = self.obj.get_data("default.vqem_percentage_below_top_profile_stage_2_detail", ["deviceSourceId",

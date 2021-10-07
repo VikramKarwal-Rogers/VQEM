@@ -1,0 +1,10 @@
+setup.py
+brs/__init__.py
+brs/bit_rate_shifts.py
+brs/bit_rate_shifts_entry.py
+brs/config.py
+brs/preprocess.py
+brs.egg-info/PKG-INFO
+brs.egg-info/SOURCES.txt
+brs.egg-info/dependency_links.txt
+brs.egg-info/top_level.txt

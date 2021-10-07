@@ -1,7 +1,7 @@
-from src.preprocessor.preprocess import preprocessor
+from time_to_top_profile.preprocess import preprocessor
 from pyspark.sql.functions import rank, col, max as max_
 from pyspark.sql.functions import lit, when
-from src.config.config import config
+from time_to_top_profile.config import config
 from pyspark.sql.functions import explode
 from pyspark.sql import functions as func
 from pyspark.sql.functions import col, array_contains
@@ -65,8 +65,8 @@ class TTTP:
                                                                        "pluginSessionId"
                                                                        ]). \
             withColumn("weights", func.round(col("sessionduration") / col("total_session_duration"), 10)). \
-            withColumn("dot_product_TTTP", func.when(col("weights") == 1.0, col("tttp")). \
-                       otherwise(round(col("tttp") * col("weights"), 10)).cast(DoubleType()))
+            withColumn("dot_product_TTTP", func.when(col("weights") == 1.0, col("Time_To_Top_Profile")). \
+                       otherwise(round(col("Time_To_Top_Profile") * col("weights"), 10)).cast(DoubleType()))
 
         return raw_df_with_total_session_duration.groupBy("deviceSourceId", "pluginSessionId").sum("dot_product_TTTP").\
             withColumnRenamed("sum(dot_product_TTTP)", "weighted_average_TTTP"). \

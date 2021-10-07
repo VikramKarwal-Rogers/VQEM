@@ -17,7 +17,7 @@ class VQEM_DEVICE:
 
     def __vqem_score__(self, raw_df):
 
-        return raw_df.withColumn("vqem_score", (100 - (((self.PTBTP_weight * col("normalized_weighted_average_PTBTP"))+(self.TTTP_weight * col("normalized_tttp"))+
+        return raw_df.withColumn("vqem", (100 - (((self.PTBTP_weight * col("normalized_weighted_average_PTBTP"))+(self.TTTP_weight * col("normalized_tttp"))+
                                  (self.BRS_weight * col("normalized_weighted_average_bitrate"))) * 100)))
 
     def __initial_method__(self, run_date):
@@ -40,11 +40,11 @@ class VQEM_DEVICE:
         combined = self.obj.join_three_frames(tttp, ptbtp, bitrate,"inner", ["deviceSourceId"]).\
             withColumn("event_date", substring(lit(run_date),1,10))
 
-        # vqem_score = self.__vqem_score__(combined).select("deviceSourceId",
+        # vqem = self.__vqem_score__(combined).select("deviceSourceId",
         #                                                   "normalized_tttp",
         #                                                   "normalized_weighted_average_PTBTP",
         #                                                   "normalized_weighted_average_bitrate",
-        #                                                   "vqem_score",
+        #                                                   "vqem",
         #                                                   "event_date").\
         #     withColumnRenamed("normalized_weighted_average_PTBTP", "normalized_PTBTP").\
         #     withColumnRenamed("normalized_weighted_average_bitrate", "normalized_bitrate")
@@ -57,11 +57,11 @@ class VQEM_DEVICE:
 
 
         # self.spark.sql("DROP TABLE IF EXISTS default.vqem_score_device_level_staging")
-        # vqem_score.write.saveAsTable("default.vqem_score_device_level_staging")
+        # vqem.write.saveAsTable("default.vqem_score_device_level_staging")
 
-        # self.spark.sql("CREATE TABLE IF NOT EXISTS default.vqem_score(deviceSourceId string, normalized_tttp double, normalized_PTBTP double, normalized_bitrate double, vqem_score double, event_date string)")
+        # self.spark.sql("CREATE TABLE IF NOT EXISTS default.vqem(deviceSourceId string, normalized_tttp double, normalized_PTBTP double, normalized_bitrate double, vqem double, event_date string)")
 
-        # self.spark.sql("INSERT INTO TABLE default.vqem_score select * from vqem_score_device_level_staging")
+        # self.spark.sql("INSERT INTO TABLE default.vqem select * from vqem_score_device_level_staging")
 
         return True
 
