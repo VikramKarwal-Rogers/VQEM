@@ -2,10 +2,11 @@
 
 ![Alt text](logo.png?raw=true "Original") 
 
+<h2> Next Step </h2>
 
 <h4> Thresholds Needed on each individual KPI Level (SST, TTTP, BRS) </h4>
 
-<b>Potential Actions for Mutual Threshold Findings on Each KPI Level</b>
+Potential Actions for Mutual Threshold Findings on Each KPI Level
 
 <b>1) BitRate Shifts to Calls Analysis</b>
 
