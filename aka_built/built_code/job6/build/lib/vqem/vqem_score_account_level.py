@@ -1,5 +1,5 @@
-from preprocessor.preprocess import preprocessor
-from config.config import config
+from vqem.preprocess import preprocessor
+from vqem.config import config
 from pyspark.sql.functions import *
 
 
@@ -97,5 +97,7 @@ class VQEM_ACCOUNT:
 
         self.spark.sql("DROP TABLE IF EXISTS default.vqem_score_account_level_staging_detail")
         joined_with_vqem_score.write.saveAsTable("default.vqem_score_account_level_staging_detail")
+
+        self.spark.sql("INSERT INTO default.vqem_account_score_level_staging_historical SELECT * from default.vqem_score_account_level_staging_detail")
 
         return True

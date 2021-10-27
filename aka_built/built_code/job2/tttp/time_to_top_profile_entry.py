@@ -1,10 +1,10 @@
 from tttp.time_to_top_profile import TTTP
 
 
-def main():
+def main(run_date):
 
     job_2 = TTTP()
-    status = job_2.__initial_method__()
+    status = job_2.__initial_method__(run_date)
 
     if status == True:
 
@@ -12,6 +12,6 @@ def main():
     else:
         print("Time To Top Profile Crashed")
 
-def run():
+def run(run_date):
 
-    main()
+    main(run_date)

@@ -2,6 +2,8 @@ setup.py
 vqem/__init__.py
 vqem/config.py
 vqem/preprocess.py
+vqem/vqem_score_account_level.py
+vqem/vqem_score_device_level.py
 vqem/vqem_score_entry.py
 vqem/vqem_score_session_level.py
 vqem.egg-info/PKG-INFO

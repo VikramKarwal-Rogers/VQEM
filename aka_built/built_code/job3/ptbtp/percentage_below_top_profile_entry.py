@@ -1,10 +1,10 @@
 from ptbtp.percentage_below_top_profile import PTBTP
 
 
-def main():
+def main(run_date):
 
     job_3 = PTBTP()
-    status = job_3.__initial_method__()
+    status = job_3.__initial_method__(run_date)
 
     if status == True:
 
@@ -12,6 +12,6 @@ def main():
     else:
         print("Percentage Below Top Profile Crashed")
 
-def run():
+def run(run_date):
 
-    main()
+    main(run_date)

@@ -34,11 +34,12 @@ class SST:
 
     def __weighted_session_startup_time__(self, raw_df):
 
-        total_session_duration = raw_df.groupBy("deviceSourceId", "pluginSessionId").sum("sessionduration"). \
+        total_session_duration = raw_df.groupBy("accountSourceId","deviceSourceId", "pluginSessionId").sum("sessionduration"). \
             withColumnRenamed("sum(sessionduration)", "total_session_duration")
 
         raw_df_with_total_session_duration = self.obj.join_two_frames(raw_df, total_session_duration, "inner",
-                                                                      ["deviceSourceId",
+                                                                      ["accountSourceId",
+                                                                       "deviceSourceId",
                                                                        "pluginSessionId"
                                                                        ]). \
             withColumn("weights", func.round(col("sessionduration") / col("total_session_duration"), 10)). \
@@ -46,12 +47,12 @@ class SST:
                        otherwise(round(col("percentage_of_stp_time") * col("weights"), 10)).cast(DoubleType())).\
             filter(col("percentage_of_stp_time")>=0)
 
-        return raw_df_with_total_session_duration.groupBy("deviceSourceId", "pluginSessionId").sum("dot_product_STP"). \
+        return raw_df_with_total_session_duration.groupBy("accountSourceId", "deviceSourceId", "pluginSessionId").sum("dot_product_STP"). \
             withColumnRenamed("sum(dot_product_STP)", "weighted_average_STP"). \
             filter(col("weighted_average_STP") >= 0)
 
     def __weighted_STP_average_by_device__(self, raw_df):
-        return raw_df.groupBy("deviceSourceId").avg("weighted_average_STP"). \
+        return raw_df.groupBy("accountSourceId", "deviceSourceId").avg("weighted_average_STP"). \
             withColumnRenamed("avg(weighted_average_STP)", "weighted_average_STP")
 
     def __normalized_stp__(self, raw_stp):
@@ -62,7 +63,7 @@ class SST:
         return raw_stp.withColumn("normalized_stp",
                                    ((col("weighted_average_stp") - self.min) / ((self.max) - self.min)))
 
-    def __initial_method__(self):
+    def __initial_method__(self,run_date):
 
         raw_df = self.obj.get_data("default.vqem_base_table", ["accountSourceId",
                                                                "deviceSourceId",
@@ -79,7 +80,8 @@ class SST:
                                                                "bitrate_flattened",
                                                                "az_insert_ts"])
 
-        session_startup_time = self.__session_startup_time__(raw_df.select("deviceSourceId",
+        session_startup_time = self.__session_startup_time__(raw_df.select("accountSourceId",
+                                                                           "deviceSourceId",
                                                                            "pluginSessionId",
                                                                            "playbackId",
                                                                            "starttime",
@@ -92,7 +94,14 @@ class SST:
 
         weighted_average_stp_session = self.__weighted_session_startup_time__(session_startup_time)
 
-        weighted_average_stp = self.__weighted_STP_average_by_device__(weighted_average_stp_session)
+        self.spark.sql("DROP TABLE IF EXISTS default.vqem_session_start_time_stage_4_historical")
+
+        weighted_average_stp = self.__weighted_STP_average_by_device__(weighted_average_stp_session).\
+            withColumn("event_date", substring(lit(run_date), 1, 10))
+
+        weighted_average_stp.write.saveAsTable("default.vqem_session_start_time_stage_4_historical")
+
+        weighted_average_stp.drop("event_date")
 
         normalized_average_stp = self.__normalized_stp__(weighted_average_stp)
 

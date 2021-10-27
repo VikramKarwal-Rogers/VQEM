@@ -1,10 +1,10 @@
 from brs.bit_rate_shifts import BRS
 
 
-def main():
+def main(run_date):
 
     job_4 = BRS()
-    status = job_4.__initial_method__()
+    status = job_4.__initial_method__(run_date)
 
     if status == True:
 
@@ -12,6 +12,6 @@ def main():
     else:
         print("Bit Rate Shifts Crashed")
 
-def run():
+def run(run_date):
 
-    main()
+    main(run_date)
