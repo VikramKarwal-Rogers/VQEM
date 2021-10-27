@@ -23,7 +23,7 @@ Potential Actions for Mutual Threshold Findings on Each KPI Level
 
 <b>3) Session Startup Time</b>
 
-1) Session Startup Timeto Calls Analysis
+1) Session Startup Time to Calls Analysis
 2) Feedback from Experts 
 3) LTR Survey Feedback from Customers
 
