@@ -8,20 +8,20 @@
 
 Potential Actions for Mutual Threshold Findings on Each KPI Level
 
-<b>1) BitRate Shifts to Calls Analysis</b>
+<b>1) BitRate Shifts</b>
 
 1) BitRate Shifts to Calls Analysis
 2) Feedback from Experts 
 3) LTR Survey Feedback from Customers
 
-<b>2) Time To Top Profile to Calls Analysis</b>
+<b>2) Time To Top Profile</b>
 
 1) Time To Top Profile Shifts to Calls Analysis
 2) Feedback from Experts 
 3) LTR Survey Feedback from Customers
 
 
-<b>3) Session Startup Time to Calls Analysis</b>
+<b>3) Session Startup Time</b>
 
 1) Session Startup Timeto Calls Analysis
 2) Feedback from Experts 
