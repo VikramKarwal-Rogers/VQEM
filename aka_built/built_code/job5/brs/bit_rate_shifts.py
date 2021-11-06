@@ -19,7 +19,7 @@ class BRS:
         self.obj = preprocessor(self.con.context)
         self.spark = self.con.spark
         self.min_bound = 0
-        self.max_bound = 15
+        self.max_bound = 12
 
 
     def __total_bitrate_shifts__(self, raw_df):
