@@ -31,7 +31,7 @@ Potential Actions for Mutual Threshold Findings on Each KPI Level
 
 ![Alt text](call_rates.png?raw=true "Original")
 
-<h3> Sessionduration Visualization </h3>
+<h3> SessionDuration Visualization </h3>
 
 ![Alt text](session_duration.png?raw=true "Original") 
 
