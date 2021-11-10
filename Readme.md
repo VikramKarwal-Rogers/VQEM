@@ -27,6 +27,13 @@ Potential Actions for Mutual Threshold Findings on Each KPI Level
 2) Feedback from Experts 
 3) LTR Survey Feedback from Customers
 
+<h3> Calls Visualization </h3>
+
+![Alt text](call_rates.png?raw=true "Original")
+
+<h3> Sessionduration Visualization </h3>
+
+![Alt text](session_duration.png?raw=true "Original") 
 
 <h3> Channel Information is still Needed to Have a Continuous Pipeline (in-progress) </h3>
 
