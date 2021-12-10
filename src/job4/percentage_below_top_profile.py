@@ -214,10 +214,16 @@ class PTBTP:
 
         percentage_below_top_profile = self.__percentage_below_top_profile__(raw_df). \
             withColumn("time_at_top_profile",
-                       (col("sessionduration").cast(LongType()) - (col("time_below_top_profile").cast(LongType()) -
+                       (col("sessionduration").cast(LongType()) - func.abs(col("time_below_top_profile").cast(LongType()) -
                        col("stp_time").cast(LongType())))). \
             drop(col("stp_time"))
 
+        percentage_below_top_profile = percentage_below_top_profile.withColumn("time_at_top_profile",
+                                                                               func.when(
+                                                                                   col("percentage_below_top_profile").
+                                                                                   cast(IntegerType()) == 100,
+                                                                                   0).otherwise(
+                                                                                   col("time_at_top_profile")))
 
         self.spark.sql("DROP TABLE IF EXISTS default.vqem_percentage_below_top_profile_stage_2_detail")
         percentage_below_top_profile.write.saveAsTable("default.vqem_percentage_below_top_profile_stage_2_detail")
