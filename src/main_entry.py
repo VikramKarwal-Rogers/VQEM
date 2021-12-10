@@ -13,60 +13,60 @@ def main(run_date):
 
     print("Current Date of Run", run_date)
 
-    # job_1 = parsing()
-    #
-    # raw_df = job_1.__get_data__(run_date)
-    # raw_df = job_1.__filteration__(raw_df)
-    # status = job_1.__save__(raw_df)
-    #
-    # if status==True:
-    #
-    #     print("Preprocessing Successfully Completed")
-    # else:
-    #     print("Preprocessing Crashed")
-    #
-    # job_2 = TTTP()
-    # status = job_2.__initial_method__(run_date)
-    #
-    # if status == True:
-    #
-    #     print("Time To Top Profile Successfully Completed")
-    # else:
-    #     print("Time To Top Profile Crashed")
-    #
-    # job_3 = SST()
-    # status = job_3.__initial_method__(run_date)
-    #
-    # if status == True:
-    #     print("Session Start Time Job Successfully Completed")
-    # else:
-    #     print("Session Start Time Job Crashed")
-    #
-    # job_4 = PTBTP()
-    # status = job_4.__initial_method__(run_date)
-    #
-    # if status == True:
-    #     print("Percentage Below Top Profile Job Successfully Completed")
-    # else:
-    #     print("Percentage Below Top Profile Job Crashed")
-    #
-    # job_5 = BRS()
-    # status = job_5.__initial_method__(run_date)
-    #
-    # if status == True:
-    #     print("Bitrate Shifts Job Successfully Completed")
-    # else:
-    #     print("Bitrate Shifts Job Crashed")
-    #
-    # job_6 = VQEM_DEVICE()
-    # status = job_6.__initial_method__(run_date)
-    #
-    # if status == True:
-    #
-    #     print("VQEM on Device Level Completed")
-    # else:
-    #
-    #     print("VQEM on Device Level Crashed")
+    job_1 = parsing()
+
+    raw_df = job_1.__get_data__(run_date)
+    raw_df = job_1.__filteration__(raw_df)
+    status = job_1.__save__(raw_df)
+
+    if status==True:
+
+        print("Preprocessing Successfully Completed")
+    else:
+        print("Preprocessing Crashed")
+
+    job_2 = TTTP()
+    status = job_2.__initial_method__(run_date)
+
+    if status == True:
+
+        print("Time To Top Profile Successfully Completed")
+    else:
+        print("Time To Top Profile Crashed")
+
+    job_3 = SST()
+    status = job_3.__initial_method__(run_date)
+
+    if status == True:
+        print("Session Start Time Job Successfully Completed")
+    else:
+        print("Session Start Time Job Crashed")
+
+    job_4 = PTBTP()
+    status = job_4.__initial_method__(run_date)
+
+    if status == True:
+        print("Percentage Below Top Profile Job Successfully Completed")
+    else:
+        print("Percentage Below Top Profile Job Crashed")
+
+    job_5 = BRS()
+    status = job_5.__initial_method__(run_date)
+
+    if status == True:
+        print("Bitrate Shifts Job Successfully Completed")
+    else:
+        print("Bitrate Shifts Job Crashed")
+
+    job_6 = VQEM_DEVICE()
+    status = job_6.__initial_method__(run_date)
+
+    if status == True:
+
+        print("VQEM on Device Level Completed")
+    else:
+
+        print("VQEM on Device Level Crashed")
 
     job_7 = VQEM_SESSION()
     status = job_7.__initial_method__(run_date)
