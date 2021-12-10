@@ -126,8 +126,19 @@ class PTBTP:
                                                                                "below_time_after_last_timestamp",
                                                                                ), raw_df_below_top_profile,"inner",["accountSourceId","deviceSourceId","pluginSessionId","playbackId"]).distinct()
 
-        return raw_df_with_below_top_profile.withColumn("percentage_below_top_profile",
-                                                        round(((col("time_below_top_profile") + col("below_time_after_last_timestamp"))/1000)/(col("sessionduration")/1000)*100,3)).\
+        stp_minus_time = self.obj.get_data("default.vqem_session_start_time_stage_4_detail", ["accountSourceId",
+                                                                                              "deviceSourceId",
+                                                                                              "pluginSessionId",
+                                                                                              "playbackId"
+                                                                                              "stp_time"])
+
+        raw_df_below_top_profile_minus_stp = self.obj.join_two_frames(raw_df_with_below_top_profile,stp_minus_time,"inner",["accountSourceId",
+                                                                                                                            "deviceSourceId",
+                                                                                                                            "pluginSessionId",
+                                                                                                                            "playbackId"])
+
+        return raw_df_below_top_profile_minus_stp.withColumn("percentage_below_top_profile",
+                                                        round(((col("time_below_top_profile") + col("below_time_after_last_timestamp"))/1000)/((col("sessionduration")-col("stp_time"))/1000)*100,3)).\
     withColumn("time_below_top_profile", col("below_time_after_last_timestamp") + col("time_below_top_profile")).\
     select("accountSourceId",
            "deviceSourceId",
@@ -136,6 +147,7 @@ class PTBTP:
            "sessionduration",
            "starttime",
            "stream_type",
+           "stp_time",
            "time_below_top_profile",
            "percentage_below_top_profile").\
     filter(col("percentage_below_top_profile")>=0).\
@@ -200,8 +212,25 @@ class PTBTP:
                    "playbackId",
                    "clientGeneratedTimestamp").distinct()
 
-        percentage_below_top_profile = self.__percentage_below_top_profile__(raw_df).\
-            withColumn("time_at_top_profile",col("sessionduration") - col("time_below_top_profile"))
+        percentage_below_top_profiles = self.__percentage_below_top_profile__(raw_df).\
+            withColumn("time_at_top_profile",col("sessionduration") - col("time_below_top_profile") - col("stp_time")).\
+            drop(col("stp_time"))
+
+        tttp_df = self.obj.get_data("default.vqem_time_to_top_profile_stage_1_detail", ["accountSourceId",
+                                                                                        "deviceSourceId",
+                                                                                        "pluginSessionId",
+                                                                                        "playbackId",
+                                                                                        "tttp"])
+        percentage_below_top_profile = self.obj.join_two_frames(percentage_below_top_profiles,
+                                                                          tttp_df,"inner",["accountSourceId",
+                                                                                           "deviceSourceId",
+                                                                                           "pluginSessionId",
+                                                                                           "playbackId"])
+        percentage_below_top_profile = percentage_below_top_profile.withColumn("time_at_top_profile",
+                                                                               func.when(col("tttp") == 0, 0).otherwise(col("time_at_top_profile"))).\
+            drop(col("tttp"))
+
+
 
         self.spark.sql("DROP TABLE IF EXISTS default.vqem_percentage_below_top_profile_stage_2_detail")
         percentage_below_top_profile.write.saveAsTable("default.vqem_percentage_below_top_profile_stage_2_detail")

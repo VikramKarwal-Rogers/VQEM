@@ -1,7 +1,7 @@
 from job1.data_preprocessing import parsing
 from job2.Time_To_Top_Profile import TTTP
-from job3.percentage_below_top_profile import PTBTP
-from job4.session_startup_time import SST
+from job3.session_startup_time import SST
+from job4.percentage_below_top_profile import PTBTP
 from job5.bit_rate_shifts import BRS
 from job6.vqem_score_device_level import VQEM_DEVICE
 from job6.vqem_score_session_level import VQEM_SESSION
@@ -11,7 +11,8 @@ from datetime import datetime, timedelta
 
 def main(run_date):
 
-    # print("Current Date of Run", run_date)
+    print("Current Date of Run", run_date)
+
     # job_1 = parsing()
     #
     # raw_df = job_1.__get_data__(run_date)
@@ -33,21 +34,21 @@ def main(run_date):
     # else:
     #     print("Time To Top Profile Crashed")
     #
-    # job_3 = PTBTP()
+    # job_3 = SST()
     # status = job_3.__initial_method__(run_date)
-    #
-    # if status == True:
-    #     print("Percentage Below Top Profile Job Successfully Completed")
-    # else:
-    #     print("Percentage Below Top Profile Job Crashed")
-    #
-    # job_4 = SST()
-    # status = job_4.__initial_method__(run_date)
     #
     # if status == True:
     #     print("Session Start Time Job Successfully Completed")
     # else:
     #     print("Session Start Time Job Crashed")
+    #
+    # job_4 = PTBTP()
+    # status = job_4.__initial_method__(run_date)
+    #
+    # if status == True:
+    #     print("Percentage Below Top Profile Job Successfully Completed")
+    # else:
+    #     print("Percentage Below Top Profile Job Crashed")
     #
     # job_5 = BRS()
     # status = job_5.__initial_method__(run_date)
@@ -84,15 +85,15 @@ def main(run_date):
     else:
         print("VQEM on Device Level Completed")
 
-    # job_9 = VQEM_ACCOUNT()
-    # status = job_9.__initial_method__(run_date)
-    #
-    # if status == True:
-    #
-    #     print("VQEM on Account Level Completed")
-    # else:
-    #
-    #     print("VQEM on Account Level Crashed")
+    job_9 = VQEM_ACCOUNT()
+    status = job_9.__initial_method__(run_date)
+
+    if status == True:
+
+        print("VQEM on Account Level Completed")
+    else:
+
+        print("VQEM on Account Level Crashed")
 
 
 if __name__ == '__main__':

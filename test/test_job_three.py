@@ -2,7 +2,7 @@ from src.preprocessor.preprocess import preprocessor
 import unittest
 from src.config.config import config
 from pyspark.sql.types import StructField, StructType, StringType, ArrayType, IntegerType
-from src.job3.percentage_below_top_profile import PTBTP
+from src.job4.percentage_below_top_profile import PTBTP
 
 
 class jobthreeTest(unittest.TestCase):

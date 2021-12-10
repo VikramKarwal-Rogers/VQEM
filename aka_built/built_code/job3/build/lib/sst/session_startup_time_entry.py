@@ -3,8 +3,8 @@ from sst.session_startup_time import SST
 
 def main(run_date):
 
-    job_4 = SST()
-    status = job_4.__initial_method__(run_date)
+    job_3 = SST()
+    status = job_3.__initial_method__(run_date)
 
     if status == True:
 

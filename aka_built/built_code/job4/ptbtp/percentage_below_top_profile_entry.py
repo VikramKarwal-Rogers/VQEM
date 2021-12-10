@@ -3,8 +3,8 @@ from ptbtp.percentage_below_top_profile import PTBTP
 
 def main(run_date):
 
-    job_3 = PTBTP()
-    status = job_3.__initial_method__(run_date)
+    job_4 = PTBTP()
+    status = job_4.__initial_method__(run_date)
 
     if status == True:
 

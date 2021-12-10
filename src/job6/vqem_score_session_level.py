@@ -41,6 +41,7 @@ class VQEM_SESSION:
             withColumnRenamed("avg(normalized_stp)", "normalized_stp")
 
     def __initial_method__(self, run_date):
+
         tttp_session = self.obj.get_data("default.vqem_time_to_top_profile_stage_1_detail", ["accountSourceId",
                                                                                              "deviceSourceId",
                                                                                              "pluginSessionId",
@@ -139,7 +140,7 @@ class VQEM_SESSION:
 
         self.spark.sql("DROP TABLE IF EXISTS default.vqem_score_session_level_staging_detail")
         joined_with_vqem_score.write.saveAsTable("default.vqem_score_session_level_staging_detail")
-        #
+
         # combined_vqem_base = joined_with_vqem_score.withColumn("event_date", substring(lit(run_date), 1, 10)). \
         #     withColumn("hour", hour(col("az_insert_ts"))). \
         #     withColumn("deviceSourceId", func.regexp_replace(col("deviceSourceId"), ":", "")).distinct()
